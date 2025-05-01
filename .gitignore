@@ -6,7 +6,7 @@
 *.dylib
 *.test
 *.out
-crt_go
+./crt_go
 
 # Go 工具链生成的文件
 /vendor/
