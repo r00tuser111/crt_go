@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"time"
 
 	"crt_go/internal/config"
 	"crt_go/internal/history"
@@ -16,8 +17,11 @@ import (
 	"crt_go/internal/output"
 )
 
+var cfg *config.Config
+
 // Run 执行主要的处理逻辑
-func Run(cfg *config.Config) error {
+func Run(config *config.Config) error {
+	cfg = config
 	if cfg.Domain == "" && cfg.DomainList == "" {
 		return fmt.Errorf("必须指定域名(-d)或域名列表文件(-l)")
 	}
@@ -150,11 +154,22 @@ func isValidSubdomain(subdomain string) bool {
 // processOneDomain 处理单个域名
 func processOneDomain(domain string) (model.Result, error) {
 	url := fmt.Sprintf("https://crt.sh/json?q=%%.%s", domain)
+
+	// Add delay before making the request
+	if cfg.Delay > 0 {
+		time.Sleep(time.Duration(cfg.Delay) * time.Millisecond)
+	}
+
 	resp, err := http.Get(url)
 	if err != nil {
 		return model.Result{}, err
 	}
 	defer resp.Body.Close()
+
+	// Check for rate limit response
+	if resp.StatusCode == 429 {
+		return model.Result{}, fmt.Errorf("rate limit exceeded (429). Try increasing delay or reducing threads")
+	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {

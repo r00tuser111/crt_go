@@ -147,6 +147,49 @@ JSON 输出格式：
 - `-m, --monitor`: 监控模式，用于发现新的子域名
 - `-t, --threads`: 并发线程数（默认：5）
 - `--silent`: 抑制信息输出
+- `--delay`: 请求间隔延迟，单位为毫秒（默认：0）
+
+## 速率限制
+
+crt.sh 服务有速率限制以防止滥用。如果遇到 "429 Too Many Requests" 错误，可以尝试以下解决方案：
+
+1. 减少线程数：
+```bash
+# 使用单线程
+./crt_go -d example.com -t 1 -s
+
+# 或使用较少的线程数
+./crt_go -d example.com -t 2 -s
+```
+
+2. 添加请求延迟：
+```bash
+# 添加500毫秒的请求延迟
+./crt_go -d example.com --delay 500 -s
+
+# 对于多个域名，使用更长的延迟
+./crt_go -l domains.txt --delay 1000 -s
+```
+
+3. 处理大量域名：
+```bash
+# 通过时间分散工作负载
+./crt_go -l domains.txt -t 1 --delay 1000 -s
+
+# 或将域名列表分批处理
+split -l 10 domains.txt batch_
+for batch in batch_*; do
+    ./crt_go -l $batch -t 1 --delay 500 -s
+    sleep 5
+done
+```
+
+最佳实践：
+- 从单线程开始（`-t 1`）
+- 添加请求延迟（`--delay 500` 或更高）
+- 对于自动化监控，使用更长的延迟时间
+- 将大型域名列表分成小批次处理
+- 考虑在非高峰时段运行扫描
 
 ## 贡献
 

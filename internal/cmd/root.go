@@ -52,6 +52,9 @@ func init() {
 
 	// 监控模式
 	rootCmd.Flags().BoolVarP(&cfg.Monitor, "monitor", "m", false, "Enable monitoring mode")
+
+	// 请求延迟
+	rootCmd.Flags().IntVar(&cfg.Delay, "delay", 0, "Delay between requests in milliseconds")
 }
 
 func Execute() error {

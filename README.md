@@ -147,6 +147,49 @@ JSON output format:
 - `-m, --monitor`: Monitor mode for new subdomains
 - `-t, --threads`: Number of concurrent threads (default: 5)
 - `--silent`: Suppress information output
+- `--delay`: Delay between requests in milliseconds (default: 0)
+
+## Rate Limiting
+
+The crt.sh service has rate limiting in place to prevent abuse. If you encounter "429 Too Many Requests" errors, you can try these solutions:
+
+1. Reduce thread count:
+```bash
+# Use single thread
+./crt_go -d example.com -t 1 -s
+
+# Or use fewer threads
+./crt_go -d example.com -t 2 -s
+```
+
+2. Add delay between requests:
+```bash
+# Add 500ms delay between requests
+./crt_go -d example.com --delay 500 -s
+
+# For multiple domains, use longer delay
+./crt_go -l domains.txt --delay 1000 -s
+```
+
+3. For large domain lists:
+```bash
+# Split the work across time
+./crt_go -l domains.txt -t 1 --delay 1000 -s
+
+# Or process domains in smaller batches
+split -l 10 domains.txt batch_
+for batch in batch_*; do
+    ./crt_go -l $batch -t 1 --delay 500 -s
+    sleep 5
+done
+```
+
+Best Practices:
+- Start with a single thread (`-t 1`)
+- Add delay between requests (`--delay 500` or higher)
+- For automated monitoring, use longer delays
+- Split large domain lists into smaller batches
+- Consider running scans during off-peak hours
 
 ## Contributing
 
