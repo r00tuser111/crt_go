@@ -1,0 +1,49 @@
+# Go 编译生成的二进制文件和对象文件
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+crt_go
+
+# Go 工具链生成的文件
+/vendor/
+/go.work
+
+# IDE 和编辑器生成的文件和目录
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 操作系统生成的文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 项目特定的输出文件
+*.xlsx
+*.json
+/results*
+/dist/
+/build/
+/bin/
+
+# 日志文件
+*.log
+
+# 环境变量文件
+.env
+.env.local
+.env.*.local
+
+# 测试覆盖率报告
+coverage.txt
+coverage.html
